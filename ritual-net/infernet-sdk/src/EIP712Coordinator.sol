@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.4;
 
-import {ECDSA} from "solady/utils/ECDSA.sol";
+import {ECDSA} from "./solady/ECDSA.sol";
 import {Coordinator} from "./Coordinator.sol";
-import {EIP712} from "solady/utils/EIP712.sol";
+import {EIP712} from "./solady/EIP712.sol";
 import {Delegator} from "./pattern/Delegator.sol";
 
 /// @title EIP712Coordinator
@@ -32,17 +32,19 @@ contract EIP712Coordinator is EIP712, Coordinator {
     uint256 public constant DELEGATEE_OVERHEAD_CREATE_WEI = 91_200 wei;
 
     /// @notice EIP-712 struct(Subscription) typeHash
-    bytes32 private constant EIP712_SUBSCRIPTION_TYPEHASH = keccak256(
-        "Subscription(address owner,uint32 activeAt,uint32 period,uint32 frequency,uint16 redundancy,uint48 maxGasPrice,uint32 maxGasLimit,string containerId,bytes inputs)"
-    );
+    bytes32 private constant EIP712_SUBSCRIPTION_TYPEHASH =
+        keccak256(
+            "Subscription(address owner,uint32 activeAt,uint32 period,uint32 frequency,uint16 redundancy,uint48 maxGasPrice,uint32 maxGasLimit,string containerId,bytes inputs)"
+        );
 
     /// @notice EIP-712 struct(DelegateSubscription) typeHash
     /// @dev struct(DelegateSubscription) == { uint32 nonce, uint32 expiry, Subscription sub }
     /// @dev The `nonce` represents the nonce of the subscribing contract (sub-owner); prevents signature replay
     /// @dev The `expiry` is when the delegated subscription signature expires and can no longer be used
-    bytes32 private constant EIP712_DELEGATE_SUBSCRIPTION_TYPEHASH = keccak256(
-        "DelegateSubscription(uint32 nonce,uint32 expiry,Subscription sub)Subscription(address owner,uint32 activeAt,uint32 period,uint32 frequency,uint16 redundancy,uint48 maxGasPrice,uint32 maxGasLimit,string containerId,bytes inputs)"
-    );
+    bytes32 private constant EIP712_DELEGATE_SUBSCRIPTION_TYPEHASH =
+        keccak256(
+            "DelegateSubscription(uint32 nonce,uint32 expiry,Subscription sub)Subscription(address owner,uint32 activeAt,uint32 period,uint32 frequency,uint16 redundancy,uint48 maxGasPrice,uint32 maxGasLimit,string containerId,bytes inputs)"
+        );
 
     /*//////////////////////////////////////////////////////////////
                                 MUTABLE
@@ -73,12 +75,22 @@ contract EIP712Coordinator is EIP712, Coordinator {
     //////////////////////////////////////////////////////////////*/
 
     /// @notice Overrides Solady.EIP712._domainNameAndVersion to return EIP712-compatible domain name, version
-    function _domainNameAndVersion() internal pure override returns (string memory, string memory) {
+    function _domainNameAndVersion()
+        internal
+        pure
+        override
+        returns (string memory, string memory)
+    {
         return (EIP712_NAME, EIP712_VERSION);
     }
 
     /// @notice Overrides Solady.EIP712._domainNameAndVersionMayChange to always return false since the domain params are not updateable
-    function _domainNameAndVersionMayChange() internal pure override returns (bool) {
+    function _domainNameAndVersionMayChange()
+        internal
+        pure
+        override
+        returns (bool)
+    {
         return false;
     }
 
@@ -210,7 +222,14 @@ contract EIP712Coordinator is EIP712, Coordinator {
         bytes calldata proof
     ) external onlyActiveNode {
         // Create subscriptionId via delegatee creation + or collect if subscription already exists
-        (uint32 subscriptionId, bool cached) = createSubscriptionDelegatee(nonce, expiry, sub, v, r, s);
+        (uint32 subscriptionId, bool cached) = createSubscriptionDelegatee(
+            nonce,
+            expiry,
+            sub,
+            v,
+            r,
+            s
+        );
 
         // Calculate additional gas overhead imposed from delivering container compute response via delegatee function
         uint256 overhead;
@@ -223,6 +242,13 @@ contract EIP712Coordinator is EIP712, Coordinator {
         }
 
         // Deliver subscription response
-        _deliverComputeWithOverhead(subscriptionId, deliveryInterval, input, output, proof, overhead);
+        _deliverComputeWithOverhead(
+            subscriptionId,
+            deliveryInterval,
+            input,
+            output,
+            proof,
+            overhead
+        );
     }
 }

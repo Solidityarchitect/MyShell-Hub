@@ -4,7 +4,7 @@ pragma solidity ^0.8.4;
 import {Test} from "forge-std/Test.sol";
 import {Manager} from "../src/Manager.sol";
 import {MockNode} from "./mocks/MockNode.sol";
-import {Ownable} from "solady/auth/Ownable.sol";
+import {Ownable} from "../src/solady/Ownable.sol";
 import {MockManager} from "./mocks/MockManager.sol";
 import {EIP712Coordinator} from "../src/EIP712Coordinator.sol";
 
@@ -13,7 +13,11 @@ import {EIP712Coordinator} from "../src/EIP712Coordinator.sol";
 interface IManagerEvents {
     event NodeActivated(address indexed node);
     event NodeDeactivated(address indexed node);
-    event NodeRegistered(address indexed node, address indexed registerer, uint32 cooldownStart);
+    event NodeRegistered(
+        address indexed node,
+        address indexed registerer,
+        uint32 cooldownStart
+    );
 }
 
 /// @title ManagerTest
@@ -114,7 +118,9 @@ contract ManagerTest is Test, IManagerEvents {
         // Ensure revert if trying to register again
         vm.expectRevert(
             abi.encodeWithSelector(
-                Manager.NodeNotRegisterable.selector, address(ALICE), uint8(Manager.NodeStatus.Registered)
+                Manager.NodeNotRegisterable.selector,
+                address(ALICE),
+                uint8(Manager.NodeStatus.Registered)
             )
         );
         ALICE.registerNode(address(ALICE));
@@ -132,7 +138,9 @@ contract ManagerTest is Test, IManagerEvents {
         // Ensure revert if trying to register
         vm.expectRevert(
             abi.encodeWithSelector(
-                Manager.NodeNotRegisterable.selector, address(ALICE), uint8(Manager.NodeStatus.Active)
+                Manager.NodeNotRegisterable.selector,
+                address(ALICE),
+                uint8(Manager.NodeStatus.Active)
             )
         );
         ALICE.registerNode(address(ALICE));
@@ -159,7 +167,9 @@ contract ManagerTest is Test, IManagerEvents {
     }
 
     /// @notice Check cannot activate node before cooldown has elapsed
-    function testFuzzCannotActivateNodeBeforeCooldownElapsed(uint256 elapsed) public {
+    function testFuzzCannotActivateNodeBeforeCooldownElapsed(
+        uint256 elapsed
+    ) public {
         uint256 startTimestamp = 10 minutes;
         vm.warp(startTimestamp);
 
@@ -171,7 +181,12 @@ contract ManagerTest is Test, IManagerEvents {
 
         vm.warp(startTimestamp + elapsed);
         // Ensure revert when attempting to activate Alice
-        vm.expectRevert(abi.encodeWithSelector(Manager.CooldownActive.selector, startTimestamp));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Manager.CooldownActive.selector,
+                startTimestamp
+            )
+        );
         ALICE.activateNode();
     }
 
@@ -179,7 +194,10 @@ contract ManagerTest is Test, IManagerEvents {
     function testCannotActivateInactiveNode() public {
         // Attempt to activate without registering
         vm.expectRevert(
-            abi.encodeWithSelector(Manager.NodeNotActivateable.selector, uint8(Manager.NodeStatus.Inactive))
+            abi.encodeWithSelector(
+                Manager.NodeNotActivateable.selector,
+                uint8(Manager.NodeStatus.Inactive)
+            )
         );
         ALICE.activateNode();
     }
@@ -192,7 +210,12 @@ contract ManagerTest is Test, IManagerEvents {
         ALICE.activateNode();
 
         // Attempt to re-activate Alice
-        vm.expectRevert(abi.encodeWithSelector(Manager.NodeNotActivateable.selector, uint8(Manager.NodeStatus.Active)));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Manager.NodeNotActivateable.selector,
+                uint8(Manager.NodeStatus.Active)
+            )
+        );
         ALICE.activateNode();
     }
 
@@ -292,7 +315,12 @@ contract ManagerTest is Test, IManagerEvents {
 
         // Expect re-activation to fail if not administering full cooldown
         vm.warp(newCooldownStart + MANAGER.cooldown() - 1 seconds);
-        vm.expectRevert(abi.encodeWithSelector(Manager.CooldownActive.selector, newCooldownStart));
+        vm.expectRevert(
+            abi.encodeWithSelector(
+                Manager.CooldownActive.selector,
+                newCooldownStart
+            )
+        );
         ALICE.activateNode();
 
         // Expect re-activation to succeed if complying with new cooldown

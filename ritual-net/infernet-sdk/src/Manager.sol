@@ -69,7 +69,11 @@ abstract contract Manager {
     /// @param node newly-registered node address
     /// @param registerer optional proxy address registering on behalf of node (is equal to node when self-registering)
     /// @param cooldownStart start timestamp of registration cooldown
-    event NodeRegistered(address indexed node, address indexed registerer, uint32 cooldownStart);
+    event NodeRegistered(
+        address indexed node,
+        address indexed registerer,
+        uint32 cooldownStart
+    );
 
     /// @notice Emitted when a node moves from `NodeStatus.Registered` to `NodeStatus.Active`
     /// @param node newly-activated node address

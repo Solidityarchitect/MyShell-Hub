@@ -2,15 +2,27 @@
 pragma solidity ^0.8.13;
 
 import {console2} from "forge-std/console2.sol";
-import {CallbackConsumer} from "infernet-sdk/consumer/Callback.sol";
+import {CallbackConsumer} from "./consumer/Callback.sol";
 
 contract SaysGM is CallbackConsumer {
+    bytes[] public outputs;
+
+    event ComputeReceived(
+        uint32 indexed subscriptionId,
+        uint32 interval,
+        uint16 redundancy,
+        address node,
+        bytes input,
+        bytes output,
+        bytes proof
+    );
+
     constructor(address coordinator) CallbackConsumer(coordinator) {}
 
     function sayGM() public {
         _requestCompute(
-            "hello-world",
-            bytes("Good morning!"),
+            "hello-world", // Container ID for our ML model
+            bytes("Good morning"), // Inputs
             20 gwei,
             1_000_000,
             1
@@ -26,6 +38,18 @@ contract SaysGM is CallbackConsumer {
         bytes calldata output,
         bytes calldata proof
     ) internal override {
+        outputs.push(output);
+
+        emit ComputeReceived(
+            subscriptionId,
+            interval,
+            redundancy,
+            node,
+            input,
+            output,
+            proof
+        );
+
         console2.log(
             "\n\n"
             "_____  _____ _______ _    _         _\n"
@@ -35,7 +59,6 @@ contract SaysGM is CallbackConsumer {
             "| | \\ \\ _| |_   | |  | |__| / ____ \\| |____\n"
             "|_|  \\_\\_____|  |_|   \\____/_/    \\_\\______|\n\n"
         );
-
         console2.log("subscription Id", subscriptionId);
         console2.log("interval", interval);
         console2.log("redundancy", redundancy);
@@ -46,5 +69,9 @@ contract SaysGM is CallbackConsumer {
         console2.logBytes(output);
         console2.log("proof:");
         console2.logBytes(proof);
+    }
+
+    function outputsLength() external view returns (uint256) {
+        return outputs.length;
     }
 }

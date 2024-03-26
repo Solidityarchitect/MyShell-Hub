@@ -30,14 +30,52 @@ build:
 test:
 	@forge test -vvv
 
+# Verify contract
+# forge verify-contract --verifier blockscout --verifier-url https://myshell-testnet-explorer.alt.technology/api --chain-id 202402181658 0xFc9bC6f4943A4073eedD0e2e6F365c99Df255478 src/SaysGM.sol:SaysGM
+
 # Execute scripts/deploy given environment variables
 deploy:
 	@forge script scripts/Deploy.sol:Deploy \
 		--broadcast \
 		--optimize \
 		--optimizer-runs 1000000 \
+		--private-key $(PRIVATE_KEY) \
 		--extra-output-files abi \
-		--rpc-url $(RPC_URL)
+		--rpc-url $(RPC_URL) \
+		--broadcast \
+		--verify \
+		--etherscan-api-key $(MYSHELL_API_KEY) \
+        -vvvv
+
+saysGM:
+	@forge script scripts/Deploy.s.sol:Deploy \
+		--broadcast \
+		--optimize \
+		--optimizer-runs 1000000 \
+		--private-key $(PRIVATE_KEY) \
+		--extra-output-files abi \
+		--rpc-url $(RPC_URL) \
+        -vvvvv
+
+callContract:
+	@forge script scripts/CallContract.s.sol:CallContract \
+		--broadcast \
+		--optimize \
+		--optimizer-runs 1000000 \
+		--private-key $(PRIVATE_KEY) \
+		--extra-output-files abi \
+		--rpc-url $(RPC_URL) \
+        -vvvvv
+
+callContract2:
+	@forge script scripts/callContract2.s.sol:CallContract2 \
+		--broadcast \
+		--optimize \
+		--optimizer-runs 1000000 \
+		--private-key $(PRIVATE_KEY) \
+		--extra-output-files abi \
+		--rpc-url $(RPC_URL) \
+        -vvvvv
 
 # Save gas snapshot
 snapshot:

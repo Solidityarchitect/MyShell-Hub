@@ -1,14 +1,22 @@
 // SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.13;
 
-//import {console2} from "forge-std/console2.sol";
+import {console2} from "forge-std/console2.sol";
 import {CallbackConsumer} from "./consumer/Callback.sol";
 
 contract msgSenders is CallbackConsumer {
+    bytes[] public outputs;
+
     constructor(address coordinator) CallbackConsumer(coordinator) {}
 
-    function msgSender(bytes memory input) public {
-        _requestCompute("lepton_node", input, 20 gwei, 1_000_000, 1);
+    function msgSender(string calldata input) public {
+        _requestCompute(
+            "lepton_node",
+            abi.encode(input),
+            20 gwei,
+            1_000_000,
+            1
+        );
     }
 
     event ComputeReceived(
@@ -30,6 +38,8 @@ contract msgSenders is CallbackConsumer {
         bytes calldata output,
         bytes calldata proof
     ) internal override {
+        outputs.push(output);
+
         emit ComputeReceived(
             subscriptionId,
             interval,

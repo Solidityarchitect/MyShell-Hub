@@ -57,6 +57,16 @@ saysGM:
 		--rpc-url $(RPC_URL) \
         -vvvvv
 
+msgSender:
+	@forge script scripts/DeployMsgSender.s.sol:DeployMsgSender \
+		--broadcast \
+		--optimize \
+		--optimizer-runs 1000000 \
+		--private-key $(PRIVATE_KEY) \
+		--extra-output-files abi \
+		--rpc-url $(RPC_URL) \
+        -vvvvv
+
 callContract:
 	@forge script scripts/CallContract.s.sol:CallContract \
 		--broadcast \
@@ -69,6 +79,16 @@ callContract:
 
 callContract2:
 	@forge script scripts/callContract2.s.sol:CallContract2 \
+		--broadcast \
+		--optimize \
+		--optimizer-runs 1000000 \
+		--private-key $(PRIVATE_KEY) \
+		--extra-output-files abi \
+		--rpc-url $(RPC_URL) \
+        -vvvvv
+
+callContract3:
+	@forge script scripts/CallContract3.s.sol:CallContract3 \
 		--broadcast \
 		--optimize \
 		--optimizer-runs 1000000 \

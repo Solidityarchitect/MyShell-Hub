@@ -2,9 +2,9 @@
 pragma solidity ^0.8.13;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {SaysGM} from "../src/SaysGM.sol";
+import {MsgSendersSimply} from "../src/MsgSendersSimply.sol";
 
-contract Deploy is Script {
+contract DeployMock is Script {
     function run() public {
         // Setup wallet
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
@@ -14,10 +14,9 @@ contract Deploy is Script {
         address deployerAddress = vm.addr(deployerPrivateKey);
         console2.log("Loaded deployer: ", deployerAddress);
 
-        address coordinator = 0x9a047b5FEa6444aE8f945bA418821F496466707c;
         // Create consumer
-        SaysGM saysGm = new SaysGM(coordinator);
-        console2.log("Deployed SaysHello: ", address(saysGm));
+        MsgSendersSimply mockRitual = new MsgSendersSimply();
+        console2.log("Deployed SaysHello: ", address(mockRitual));
 
         // Execute
         vm.stopBroadcast();

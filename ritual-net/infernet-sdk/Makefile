@@ -42,10 +42,19 @@ deploy:
 		--private-key $(PRIVATE_KEY) \
 		--extra-output-files abi \
 		--rpc-url $(RPC_URL) \
-		--broadcast \
 		--verify \
 		--etherscan-api-key $(MYSHELL_API_KEY) \
         -vvvv
+
+mockRitual:
+	@forge script scripts/DeployMock.s.sol:DeployMock \
+		--broadcast \
+		--optimize \
+		--optimizer-runs 1000000 \
+		--private-key $(PRIVATE_KEY) \
+		--extra-output-files abi \
+		--rpc-url $(RPC_URL) \
+        -vvvvv
 
 saysGM:
 	@forge script scripts/Deploy.s.sol:Deploy \

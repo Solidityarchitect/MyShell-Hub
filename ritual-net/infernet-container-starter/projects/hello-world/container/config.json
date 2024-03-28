@@ -6,11 +6,11 @@
   "chain": {
     "enabled": true,
     "trail_head_blocks": 0,
-    "rpc_url": "http://host.docker.internal:8545",
-    "coordinator_address": "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    "rpc_url": "https://myshell-testnet.alt.technology",
+    "coordinator_address": "0x9a047b5FEa6444aE8f945bA418821F496466707c",
     "wallet": {
       "max_gas_limit": 4000000,
-      "private_key": "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+      "private_key": "xxxx"
     }
   },
   "startup_wait": 1.0,
